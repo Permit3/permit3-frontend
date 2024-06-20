@@ -1,6 +1,6 @@
 import Head from "next/head";
-import Landing from "../components/landing/Landing";
 import dynamic from "next/dynamic";
+import Permit from "@/components/permit/Permit";
 const Navbar = dynamic(() => import("../components/Navbar"), {
   ssr: false
 });
@@ -16,7 +16,7 @@ export default function Home() {
           <Navbar fixed={false} />
         </div>
       </div>
-      <Landing />
+      <Permit />
     </>
   );
 }
