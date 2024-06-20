@@ -8,11 +8,16 @@ import Link from "next/link";
 import { MODAL_TYPE, useGlobalModalContext } from "../ui/modals/ModalContext";
 import { NoIcon } from "../icons/NoIcon";
 import { SuccessIcon } from "../icons/SuccessIcon";
+import { hash } from "starknet";
+import Radio from "../ui/forms/Radio";
 
 function GrantAccess() {
-  const [success, handleSuccess] = useState(false);
-  const [failed, handleFailed] = useState(true);
+  const [success, handleSuccess] = useState(true);
+  const [failed, handleFailed] = useState(false);
   const [contractAddress, handleContractAddress] = useState("");
+  const [funcName, handleFuncName] = useState("");
+  const [numApprovals, handleNumApprovals] = useState(0);
+  const [checked, handleChecked] = useState(0);
 
   const { showModal, hideModal } = useGlobalModalContext();
 
@@ -80,7 +85,6 @@ function GrantAccess() {
       {success ? (
         <div className="w-full flex flex-col bg-dark-2 rounded-lg p-12">
           <GreenCheckIcon className="mx-auto" />
-          <div className="mt-4 font-outfit text-2xl mx-auto font-semibold">Contract Name</div>
           <div className="text-sm font-medium w-full mt-1">
             <div className="flex gap-1 items-center justify-center text-white/70">
               {contractAddress}
@@ -91,11 +95,82 @@ function GrantAccess() {
               </Link>
             </div>
           </div>
+          <div className="font-outfit font-semibold text-2xl mt-8">Grant Access</div>
           <div className="flex flex-row w-full gap-4 my-6">
-            <Input className="flex-1 h-[2.25rem]" label="Permission Field" placeholder="Enter Token ID to claim" />
-            <Input className="flex-1 h-[2.25rem]" label="Permission Field" placeholder="Enter Token ID to claim" />
+            <div
+              className={`rounded-lg w-full p-0.5 select-none ${
+                checked === 0
+                  ? "bg-gradient-to-r from-gradient-default-start via-gradient-default-mid to-gradient-default-stop"
+                  : "bg-white/20"
+              }`}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleChecked(0);
+              }}
+            >
+              <div className="rounded-md bg-dark-2 py-2 px-4">
+                <Radio
+                  groupName="access"
+                  label="Grant full access"
+                  size="lg"
+                  checked={checked === 0}
+                  onClick={(e: any) => handleChecked(e.target.checked ? 0 : -1)}
+                />
+                <div className="font-light text-sm ml-6">Grant full access to the specified address</div>
+              </div>
+            </div>
+            <div
+              className={`rounded-lg w-full p-0.5 select-none ${
+                checked === 1
+                  ? "bg-gradient-to-r from-gradient-default-start via-gradient-default-mid to-gradient-default-stop"
+                  : "bg-white/20"
+              }`}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleChecked(1);
+              }}
+            >
+              <div className="rounded-md bg-dark-2 py-2 px-4">
+                <Radio
+                  groupName="access"
+                  label="Grant select access"
+                  size="lg"
+                  checked={checked === 1}
+                  onClick={(e: any) => handleChecked(e.target.checked ? 1 : -1)}
+                />
+                <div className="font-light text-sm ml-6">Grant select access to the specified address</div>
+              </div>
+            </div>
           </div>
-          <Button>Grant Access</Button>
+          {checked === 1 ? (
+            <div className="flex flex-row w-full gap-4 my-6">
+              <Input
+                className="flex-1 h-[2.25rem]"
+                label="Function Name"
+                placeholder="Enter function name"
+                value={funcName}
+                onChange={(e) => handleFuncName(e.target.value)}
+              />
+              <Input
+                className="flex-1 h-[2.25rem]"
+                label="Number of Approvals"
+                placeholder="Enter number of delegate approvals"
+                type="number"
+                value={numApprovals.toString()}
+                onChange={(e) => handleNumApprovals(parseInt(e.target.value))}
+              />
+            </div>
+          ) : null}
+          <Button
+            className="ml-auto"
+            onClick={() => {
+              const selector = hash.starknetKeccak(funcName).toString(16);
+              console.log(selector);
+              console.log(numApprovals);
+            }}
+          >
+            Grant Access
+          </Button>
         </div>
       ) : failed ? (
         <>

@@ -38,7 +38,7 @@ function Radio(props: RadioProps) {
         value={props.value}
         onChange={() => {}}
       />
-      {props.label && <span className={`ml-2 ${fontSize()}`}>{props.label}</span>}
+      {props.label && <span className={`select-none ml-2 ${fontSize()}`}>{props.label}</span>}
     </label>
   );
 }
