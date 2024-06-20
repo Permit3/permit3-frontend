@@ -10,7 +10,7 @@ function ContractCard(props: ContractCardProps) {
   const { address } = props;
   const name = "Decentraland";
   return (
-    <div className="rounded-lg bg-dark-2 p-4 flex flex-col gap-4">
+    <div className="rounded-lg bg-dark-2 border border-[#1F2328] p-4 flex flex-col gap-4">
       <div className="flex flex-row justify-between">
         <div className="flex flex-row items-center gap-2">
           <PersonIcon />
