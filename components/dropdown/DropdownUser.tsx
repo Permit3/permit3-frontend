@@ -73,7 +73,7 @@ function DropdownUser(props: DropdownUserProps) {
           </div>
 
           <div
-            className={`justify-start px-6 flex cursor-pointer mx-auto py-4 rounded-b-md hover:bg-card`}
+            className={`justify-start px-6 flex cursor-pointer mx-auto py-4 rounded-b-md hover:bg-white/10`}
             role="menuitem"
             tabIndex={-1}
             onClick={async (e: any) => {

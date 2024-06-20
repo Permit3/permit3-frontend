@@ -10,24 +10,40 @@ import { NoIcon } from "../icons/NoIcon";
 import { SuccessIcon } from "../icons/SuccessIcon";
 import { hash } from "starknet";
 import Radio from "../ui/forms/Radio";
+import usePermit3 from "@/utils/hooks/usePermit3";
+import { useNotification } from "@/utils/notification/NotificationProvider";
+import useWaitForTx from "@/utils/hooks/useWaitForTx";
+import { useAccount } from "@starknet-react/core";
 
 function GrantAccess() {
-  const [success, handleSuccess] = useState(true);
   const [failed, handleFailed] = useState(false);
+  const [entered, handleEntered] = useState(false);
+  const [actionLoading, handleActionLoading] = useState(false);
+  const [operatorAddress, handleOperatorAddress] = useState("");
   const [contractAddress, handleContractAddress] = useState("");
   const [funcName, handleFuncName] = useState("");
   const [numApprovals, handleNumApprovals] = useState(0);
   const [checked, handleChecked] = useState(0);
 
   const { showModal, hideModal } = useGlobalModalContext();
+  const { NotificationAdd } = useNotification();
+  const { contract } = usePermit3();
+  const { wait } = useWaitForTx();
+  const { account } = useAccount();
 
   return (
     <div className="h-full w-full flex flex-col p-8">
-      <div className="font-outfit font-black text-4xl mx-auto">Grant contact access to an address</div>
+      <div className="font-outfit font-black leading-tight text-4xl mx-auto">Grant contact access to an address</div>
       <div className="font-medium mx-auto">Permit an address to access a smart contract on your behalf</div>
-      <div className="flex flex-row gap-4 my-8">
-        <div className="flex flex-row w-full gap-4">
-          <Input className="flex-1 h-[2.25rem]" label="Grant" placeholder="Input permit address (0x...)" />
+      <div className="flex flex-col md:flex-row gap-4 my-8">
+        <div className="flex flex-col md:flex-row w-full gap-4">
+          <Input
+            className="flex-1 h-[2.25rem]"
+            label="Grant"
+            placeholder="Input permit address (0x...)"
+            value={operatorAddress}
+            onChange={(e) => handleOperatorAddress(e.target.value)}
+          />
           <Input
             className="flex-1 h-[2.25rem]"
             label="To Access"
@@ -39,6 +55,11 @@ function GrantAccess() {
         <Button
           className="mt-auto mb-[2px]"
           onClick={() => {
+            if (operatorAddress.trim().length > 0 && contractAddress.trim().length > 0) {
+              handleEntered(true);
+            } else {
+              NotificationAdd("ERROR", "Invalid Input", "Please enter a valid grant address and contract address.");
+            }
             // First modal
             // showModal(
             //   MODAL_TYPE.TRANSACTION_FLOW,
@@ -82,10 +103,10 @@ function GrantAccess() {
           Continue
         </Button>
       </div>
-      {success ? (
-        <div className="w-full flex flex-col bg-dark-2 rounded-lg p-12">
+      {entered ? (
+        <div className="w-full flex flex-col bg-dark-2 rounded-lg p-6 md:p-12">
           <GreenCheckIcon className="mx-auto" />
-          <div className="text-sm font-medium w-full mt-1">
+          <div className="text-sm font-medium w-full mt-2">
             <div className="flex gap-1 items-center justify-center text-white/70">
               {contractAddress}
               <Link href={`https://starkscan.co/contract/${contractAddress}`}>
@@ -96,7 +117,7 @@ function GrantAccess() {
             </div>
           </div>
           <div className="font-outfit font-semibold text-2xl mt-8">Grant Access</div>
-          <div className="flex flex-row w-full gap-4 my-6">
+          <div className="flex flex-col md:flex-row w-full gap-4 my-6">
             <div
               className={`rounded-lg w-full p-0.5 select-none ${
                 checked === 0
@@ -108,7 +129,7 @@ function GrantAccess() {
                 handleChecked(0);
               }}
             >
-              <div className="rounded-md bg-dark-2 py-2 px-4">
+              <div className="rounded-md bg-dark-2 py-2 px-4 h-full">
                 <Radio
                   groupName="access"
                   label="Grant full access"
@@ -143,7 +164,7 @@ function GrantAccess() {
             </div>
           </div>
           {checked === 1 ? (
-            <div className="flex flex-row w-full gap-4 my-6">
+            <div className="flex flex-col md:flex-row w-full gap-4 mt-2 md:mt-6 mb-6">
               <Input
                 className="flex-1 h-[2.25rem]"
                 label="Function Name"
@@ -163,10 +184,60 @@ function GrantAccess() {
           ) : null}
           <Button
             className="ml-auto"
-            onClick={() => {
-              const selector = hash.starknetKeccak(funcName).toString(16);
-              console.log(selector);
-              console.log(numApprovals);
+            loading={actionLoading}
+            onClick={async () => {
+              if (!contract?.contract || !account) {
+                return;
+              }
+              if (checked === 0) {
+                // Permit all for contract
+                handleActionLoading(true);
+                try {
+                  const maxNum = await contract.contract.get_unlimited_number_of_permits_constant();
+                  contract.contract.connect(account);
+                  let txHash = await contract.contract.permit_all_rights_in_contract(
+                    operatorAddress,
+                    contractAddress,
+                    maxNum
+                  );
+                  if (!txHash) {
+                    return;
+                  }
+                  await wait(txHash.transaction_hash);
+                  NotificationAdd("SUCCESS", "Permit Granted", "Your permit was successfully granted.");
+
+                  // Clean up UI
+                  handleEntered(false);
+                  handleOperatorAddress("");
+                  handleContractAddress("");
+                } catch (err) {
+                  console.log(err);
+                  NotificationAdd("ERROR", "Error", `${err}`);
+                }
+                handleActionLoading(false);
+              } else {
+                // Permit a specific function for contract
+                const selector = `0x${hash.starknetKeccak(funcName).toString(16)}`;
+                handleActionLoading(true);
+                try {
+                  contract.contract.connect(account);
+                  let txHash = await contract.contract.permit(operatorAddress, contractAddress, selector, numApprovals);
+                  if (!txHash) {
+                    return;
+                  }
+                  await wait(txHash.transaction_hash);
+                  NotificationAdd("SUCCESS", "Permit Granted", "Your permit was successfully granted.");
+
+                  // Clean up UI
+                  handleEntered(false);
+                  handleOperatorAddress("");
+                  handleContractAddress("");
+                } catch (err) {
+                  console.log(err);
+                  NotificationAdd("ERROR", "Error", `${err}`);
+                }
+                handleActionLoading(false);
+              }
             }}
           >
             Grant Access

@@ -27,35 +27,25 @@ function ContractCard(props: ContractCardProps) {
           <thead className="bg-[#282828]">
             <tr>
               <th scope="row" className="py-2 px-4">
-                Name
+                Selector
               </th>
               <th scope="row" className="py-2 px-4">
-                Contract Address
+                Remaining Permit Allowance
               </th>
               <th scope="row" className="py-2 px-4"></th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td className="py-2 px-4">Decentraland</td>
-              <td className="py-2 px-4 flex items-center gap-2">
-                {address}
-                <span>
-                  <Pill text="NFT" />
-                </span>
-              </td>
+              <td className="py-2 px-4">{"3ac225...5f1cb"}</td>
+              <td className="py-2 px-4">{"5"}</td>
               <td className="text-right">
                 <Button style="tertiary-colored">Revoke</Button>
               </td>
             </tr>
             <tr className="border-t border-white/10">
-              <td className="py-2 px-4">Azuki</td>
-              <td className="py-2 px-4 flex items-center gap-2">
-                {address}
-                <span>
-                  <Pill text="NFT" />
-                </span>
-              </td>
+              <td className="py-2 px-4">{"4bc235...52ceb"}</td>
+              <td className="py-2 px-4">{"3"}</td>
               <td className="text-right">
                 <Button style="tertiary-colored">Revoke</Button>
               </td>

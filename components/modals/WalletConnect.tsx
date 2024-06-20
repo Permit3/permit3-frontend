@@ -27,7 +27,7 @@ const ConnectorItem = (props: ConnectorItemProps) => {
   return (
     <>
       <div
-        className={`w-full p-6 gap-4 flex flex-wrap sm:flex-nowrap justify-center items-center rounded-lg cursor-pointer ring-2 ring-secondary hover:bg-card active:bg-card/50 select-none`}
+        className={`w-full p-6 gap-4 flex flex-wrap sm:flex-nowrap justify-center items-center rounded-lg cursor-pointer ring-2 ring-white hover:bg-black/10 active:bg-black/20 select-none`}
         onClick={onClick}
       >
         <span className="whitespace-nowrap text-center sm:text-start truncate">
@@ -84,7 +84,7 @@ const WalletSelect = (props: WalletSelectProps) => {
 
   return (
     <div
-      className={`overflow-auto max-h-full relative w-[calc(100%-2rem)] bg-popover border border-white/20 border-opacity-80 rounded-lg m-3 mr-4 mb-6 xs:mx-auto p-6 xs:w-[410px] space-y-6`}
+      className={`overflow-auto max-h-full relative w-[calc(100%-2rem)] bg-modal border border-[#1F2328] border-opacity-80 rounded-lg m-3 mr-4 mb-6 xs:mx-auto p-6 xs:w-[410px] space-y-6`}
     >
       {connectors.map(renderConnector)}
     </div>

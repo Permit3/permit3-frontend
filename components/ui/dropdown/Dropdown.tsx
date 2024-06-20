@@ -58,7 +58,7 @@ function Dropdown({ align, button, className, dropdownChildren, handleOpenChange
       }
 
       <DropdownTransition
-        className={`origin-top-right z-10 absolute top-full min-w-44 border bg-popover border-white/20 rounded-md shadow-sm mt-1 ${
+        className={`origin-top-right z-10 absolute top-full min-w-44 border bg-dark-2 border-white/20 rounded-md shadow-sm mt-1 ${
           align === "right" ? "right-0" : "left-0"
         }${className ? " " + className : ""}`}
         show={dropdownOpen}
