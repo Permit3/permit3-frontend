@@ -20,9 +20,9 @@ export const P3LogoIcon = (props: SVGProps<SVGSVGElement>) => {
           y2="97.2724"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#1D5CFF" />
-          <stop offset="0.552083" stop-color="#9A41FA" />
-          <stop offset="1" stop-color="#D940A4" />
+          <stop stopColor="#1D5CFF" />
+          <stop offset="0.552083" stopColor="#9A41FA" />
+          <stop offset="1" stopColor="#D940A4" />
         </linearGradient>
         <linearGradient
           id="paint1_linear_6_14706"
@@ -32,9 +32,9 @@ export const P3LogoIcon = (props: SVGProps<SVGSVGElement>) => {
           y2="97.2724"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#1D5CFF" />
-          <stop offset="0.552083" stop-color="#9A41FA" />
-          <stop offset="1" stop-color="#D940A4" />
+          <stop stopColor="#1D5CFF" />
+          <stop offset="0.552083" stopColor="#9A41FA" />
+          <stop offset="1" stopColor="#D940A4" />
         </linearGradient>
       </defs>
     </svg>

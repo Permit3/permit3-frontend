@@ -1,21 +1,28 @@
 import { PersonIcon } from "../icons/PersonIcon";
-import Pill from "../ui/Pill";
 import Button from "../ui/forms/Button";
 
 interface ContractCardProps {
-  address?: string;
+  contract: {
+    address: string;
+    full: Permit[];
+    partial: Permit[];
+  };
 }
 
 function ContractCard(props: ContractCardProps) {
-  const { address } = props;
-  const name = "Decentraland";
+  const { contract } = props;
+  const full = contract.full.filter((p) => BigInt(p.number) > BigInt(0));
+  const partial = contract.partial.filter((p) => BigInt(p.number) > BigInt(0));
+
   return (
     <div className="rounded-lg bg-dark-2 border border-[#1F2328] p-4 flex flex-col gap-4">
       <div className="flex flex-row justify-between">
         <div className="flex flex-row items-center gap-2">
           <PersonIcon />
           <div className="font-outfit font-semibold text-2xl">
-            {address ? `${address.slice(0, 6)}...${address.slice(address.length - 4)}` : "--"}
+            {contract.address
+              ? `${contract.address.slice(0, 6)}...${contract.address.slice(contract.address.length - 4)}`
+              : "--"}
           </div>
         </div>
         <div className="flex-nowrap">
@@ -35,21 +42,25 @@ function ContractCard(props: ContractCardProps) {
               <th scope="row" className="py-2 px-4"></th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td className="py-2 px-4">{"3ac225...5f1cb"}</td>
-              <td className="py-2 px-4">{"5"}</td>
-              <td className="text-right">
-                <Button style="tertiary-colored">Revoke</Button>
-              </td>
-            </tr>
-            <tr className="border-t border-white/10">
-              <td className="py-2 px-4">{"4bc235...52ceb"}</td>
-              <td className="py-2 px-4">{"3"}</td>
-              <td className="text-right">
-                <Button style="tertiary-colored">Revoke</Button>
-              </td>
-            </tr>
+          <tbody className="divide-y divide-white/10">
+            {full.map((p, idx) => (
+              <tr key={`${contract.address}-full-${idx}`}>
+                <td className="py-2 px-4">*</td>
+                <td className="py-2 px-4">{p.number.toString()}</td>
+                <td className="text-right">
+                  <Button style="tertiary-colored">Revoke</Button>
+                </td>
+              </tr>
+            ))}
+            {partial.map((p, idx) => (
+              <tr key={`${contract.address}-partial-${idx}`}>
+                <td className="py-2 px-4">{`${p.rights.slice(0, 6)}...${p.rights.slice(p.rights.length - 4)}`}</td>
+                <td className="py-2 px-4">{p.number.toString()}</td>
+                <td className="text-right">
+                  <Button style="tertiary-colored">Revoke</Button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

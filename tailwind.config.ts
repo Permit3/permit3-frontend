@@ -120,11 +120,6 @@ module.exports = {
     },
     extend: {
       backgroundImage: {
-        "home-star": "url('/assets/starBg.svg')",
-        "home-bg": "url('/assets/homeBg.svg')",
-        "dot-pattern": "url('/assets/dotPattern.svg')",
-        banner: "url('/assets/banner_background.png')",
-        "background-svg": "url('/assets/background.svg')",
         modal:
           "radial-gradient(42.01% 62.48% at 0% 33.7%, rgba(36, 80, 238, 0.15) 0%, rgba(36, 80, 238, 0) 100%), radial-gradient(39.18% 58.28% at 100% 96.82%, rgba(217, 64, 164, 0.13) 0%, rgba(217, 64, 164, 0) 100%), linear-gradient(0deg, #2F2F2F, #2F2F2F)"
       },

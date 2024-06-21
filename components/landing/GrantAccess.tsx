@@ -104,7 +104,7 @@ function GrantAccess() {
         </Button>
       </div>
       {entered ? (
-        <div className="w-full flex flex-col bg-dark-2 border border-[#1F2328] border rounded-lg p-6 md:p-12">
+        <div className="w-full flex flex-col bg-dark-2 border border-[#1F2328] rounded-lg p-6 md:p-12">
           <GreenCheckIcon className="mx-auto" />
           <div className="text-sm font-medium w-full mt-2">
             <div className="flex gap-1 items-center justify-center text-white/70">

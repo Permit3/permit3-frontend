@@ -40,9 +40,7 @@ function BackgroundAndWalletSelectWrapper(props: any) {
   }, [openLoginModal]);
 
   return (
-    <div
-      className={`flex min-h-screen font-azo opacity-100 text-white items-stretch bg-dot-pattern bg-fixed bg-background`}
-    >
+    <div className={`flex min-h-screen font-quicksand opacity-100 text-white items-stretc bg-fixed bg-background`}>
       {props.children}
     </div>
   );

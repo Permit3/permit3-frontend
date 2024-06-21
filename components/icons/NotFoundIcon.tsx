@@ -13,8 +13,8 @@ export const NotFoundIcon = (props: SVGProps<SVGSVGElement>) => {
         fill="url(#paint1_linear_1_10166)"
       />
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M40.9346 24.2593C40.7022 24.027 40.676 23.661 40.8554 23.3857C43.5699 19.2199 43.0991 13.5847 39.443 9.92859C35.2466 5.73214 28.4429 5.73214 24.2464 9.92859C20.0499 14.125 20.0499 20.9288 24.2464 25.1253C27.9026 28.7815 33.5381 29.2522 37.704 26.5373C37.9792 26.3578 38.3452 26.3842 38.5776 26.6164L42.414 30.4528C42.6742 30.713 43.0964 30.713 43.3567 30.4528L44.771 29.0385C45.0314 28.7782 45.0314 28.356 44.771 28.0957L40.9346 24.2593ZM37.086 12.2856C39.9807 15.1803 39.9807 19.8735 37.086 22.7683C34.1914 25.6629 29.4981 25.6629 26.6034 22.7683C23.7087 19.8735 23.7087 15.1803 26.6034 12.2856C29.4981 9.39091 34.1914 9.39091 37.086 12.2856Z"
         fill="url(#paint2_linear_1_10166)"
       />
@@ -28,8 +28,8 @@ export const NotFoundIcon = (props: SVGProps<SVGSVGElement>) => {
           y2="39.0317"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#8F8F8F" stop-opacity="0.91" />
-          <stop offset="1" stop-color="#D2D2D2" stop-opacity="0.62" />
+          <stop stopColor="#8F8F8F" stopOpacity="0.91" />
+          <stop offset="1" stopColor="#D2D2D2" stopOpacity="0.62" />
         </linearGradient>
         <linearGradient
           id="paint1_linear_1_10166"
@@ -39,8 +39,8 @@ export const NotFoundIcon = (props: SVGProps<SVGSVGElement>) => {
           y2="30.6801"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#E9E9E9" />
-          <stop offset="1" stop-color="#C4C2C2" />
+          <stop stopColor="#E9E9E9" />
+          <stop offset="1" stopColor="#C4C2C2" />
         </linearGradient>
         <linearGradient
           id="paint2_linear_1_10166"
@@ -50,8 +50,8 @@ export const NotFoundIcon = (props: SVGProps<SVGSVGElement>) => {
           y2="7.82815"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#B6B6B6" />
-          <stop offset="1" stop-color="#D7D7D7" />
+          <stop stopColor="#B6B6B6" />
+          <stop offset="1" stopColor="#D7D7D7" />
         </linearGradient>
         <linearGradient
           id="paint3_linear_1_10166"
@@ -61,8 +61,8 @@ export const NotFoundIcon = (props: SVGProps<SVGSVGElement>) => {
           y2="38.6326"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="white" stop-opacity="0.85" />
-          <stop offset="1" stop-color="white" stop-opacity="0.37" />
+          <stop stopColor="white" stopOpacity="0.85" />
+          <stop offset="1" stopColor="white" stopOpacity="0.37" />
         </linearGradient>
       </defs>
     </svg>
