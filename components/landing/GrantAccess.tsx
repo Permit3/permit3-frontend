@@ -5,9 +5,6 @@ import Input from "../ui/forms/Input";
 import { GreenCheckIcon } from "../icons/GreenCheckIcon";
 import { LinkExternalIcon } from "../icons/LinkExternalIcon";
 import Link from "next/link";
-import { MODAL_TYPE, useGlobalModalContext } from "../ui/modals/ModalContext";
-import { NoIcon } from "../icons/NoIcon";
-import { SuccessIcon } from "../icons/SuccessIcon";
 import { hash } from "starknet";
 import Radio from "../ui/forms/Radio";
 import usePermit3 from "@/utils/hooks/usePermit3";
@@ -25,7 +22,6 @@ function GrantAccess() {
   const [numApprovals, handleNumApprovals] = useState(0);
   const [checked, handleChecked] = useState(0);
 
-  const { showModal, hideModal } = useGlobalModalContext();
   const { NotificationAdd } = useNotification();
   const { contract } = usePermit3();
   const { wait } = useWaitForTx();
@@ -60,44 +56,6 @@ function GrantAccess() {
             } else {
               NotificationAdd("ERROR", "Invalid Input", "Please enter a valid grant address and contract address.");
             }
-            // First modal
-            // showModal(
-            //   MODAL_TYPE.TRANSACTION_FLOW,
-            //   {
-            //     loading: false,
-            //     subtitle: `Are you sure you want to revoke access to [project name] from [address]?`,
-            //     okButtonText: "Revoke Access",
-            //     okButtonCallback: () => {},
-            //     closeButtonText: "Cancel",
-            //     closeButtonCallback: () => {
-            //       hideModal();
-            //     },
-            //     customIcon: (
-            //       <div className="select-none rounded-full overflow-hidden mb-4">
-            //         <NoIcon className="h-[5.75rem] w-[5.75rem]" />
-            //       </div>
-            //     )
-            //   },
-            //   { showHeader: true, title: "Revoke Access" }
-            // );
-            // Second modal
-            // showModal(
-            //   MODAL_TYPE.TRANSACTION_FLOW,
-            //   {
-            //     loading: false,
-            //     subtitle: `Access revoked successfully from [project name] for [address].`,
-            //     closeButtonText: "OK",
-            //     closeButtonCallback: () => {
-            //       hideModal();
-            //     },
-            //     customIcon: (
-            //       <div className="select-none rounded-full overflow-hidden mb-4">
-            //         <SuccessIcon className="h-[5.75rem] w-[5.75rem]" />
-            //       </div>
-            //     )
-            //   },
-            //   { showHeader: true, title: "Access Revoked" }
-            // );
           }}
         >
           Continue
@@ -232,6 +190,9 @@ function GrantAccess() {
                   handleEntered(false);
                   handleOperatorAddress("");
                   handleContractAddress("");
+                  handleFuncName("");
+                  handleNumApprovals(0);
+                  handleChecked(0);
                 } catch (err) {
                   console.log(err);
                   NotificationAdd("ERROR", "Error", `${err}`);

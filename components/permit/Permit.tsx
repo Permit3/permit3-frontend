@@ -30,7 +30,7 @@ function Landing() {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          query: `{\r\n  permits(where: {from: \"${searchAddr}\"}) {\r\n    contract\r\n    creationTimestamp\r\n    creationTransactionHash\r\n    from\r\n    id\r\n    number\r\n    operator\r\n    rights\r\n  }\r\n}`
+          query: `{\r\n  permits(where: {from: \"${searchAddr}\", number_gt: \"0\"}) {\r\n    contract\r\n    creationTimestamp\r\n    creationTransactionHash\r\n    from\r\n    id\r\n    number\r\n    operator\r\n    rights\r\n  }\r\n}`
         })
       })
         .then((res) => res.json())
@@ -73,9 +73,21 @@ function Landing() {
     );
   }
 
+  const updateContract = (contract: { address: string; full: Permit[]; partial: Permit[] }) => {
+    const c = new Map(contracts);
+    if (contract.full.length === 0 && contract.partial.length === 0) {
+      c.delete(contract.address);
+      handleContracts(c);
+    } else {
+      c.set(contract.address, contract);
+    }
+
+    handleContracts(c);
+  };
+
   const renderContracts = () => {
     let ret: JSX.Element[] = [];
-    contracts && contracts.forEach((c) => ret.push(<ContractCard contract={c} />));
+    contracts && contracts.forEach((c) => ret.push(<ContractCard contract={c} updateContract={updateContract} />));
     return <>{...ret}</>;
   };
 

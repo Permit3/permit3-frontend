@@ -14,8 +14,7 @@ interface SidebarProps {
 
 function Sidebar(props: SidebarProps) {
   const { activeIdx } = props;
-  const router = useRouter();
-  const { account, isConnected } = useAccount();
+  const { isConnected } = useAccount();
   const dispatch = useDispatch();
   const { disconnect } = useDisconnect();
 

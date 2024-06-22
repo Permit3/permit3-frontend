@@ -20,6 +20,7 @@ const MODAL_COMPONENTS: any = {
 type GlobalModalContext = {
   showModal: (modalType: MODAL_TYPE, modalProps?: any, modalWrapperProps?: any) => void;
   hideModal: (closeAll?: boolean | undefined) => void;
+  setTopModalProps: (modalProps: any, modalWrapperProps: any, hideOnPathnameChange?: boolean) => void;
   getTopModalType: () => MODAL_TYPE | undefined;
   store: any;
 };
@@ -27,6 +28,7 @@ type GlobalModalContext = {
 const initalState: GlobalModalContext = {
   showModal: () => {},
   hideModal: () => {},
+  setTopModalProps: () => {},
   getTopModalType: () => undefined,
   store: {}
 };
@@ -54,6 +56,20 @@ export const GlobalModal = ({ children }: any) => {
     setStore({
       ...store,
       modalType,
+      modalProps,
+      modalWrapperProps: { ...modalWrapperProps, modalType, hideOnPathnameChange, modalOpen: true }
+    });
+  };
+
+  const setTopModalProps = (
+    modalProps: any = {},
+    modalWrapperProps: any = {},
+    hideOnPathnameChange: boolean = true
+  ) => {
+    openedModals.current.at(-1).modalProps = modalProps;
+    openedModals.current.at(-1).modalWrapperProps = modalWrapperProps;
+    setStore({
+      ...store,
       modalProps,
       modalWrapperProps: { ...modalWrapperProps, modalType, hideOnPathnameChange, modalOpen: true }
     });
@@ -130,7 +146,7 @@ export const GlobalModal = ({ children }: any) => {
   }, [store]);
 
   return (
-    <GlobalModalContext.Provider value={{ store, showModal, hideModal, getTopModalType }}>
+    <GlobalModalContext.Provider value={{ store, showModal, hideModal, setTopModalProps, getTopModalType }}>
       {store.modalWrapperProps && store.modalWrapperProps.modalOpen && renderComponent()}
       {children}
     </GlobalModalContext.Provider>
