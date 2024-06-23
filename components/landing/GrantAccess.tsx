@@ -208,8 +208,8 @@ function GrantAccess() {
         <>
           <div className="w-full flex flex-col bg-dark-2 border border-[#1F2328] rounded-lg p-12">
             <NotFoundIcon className="mx-auto" />
-            <div className="mt-4 font-outfit text-2xl mx-auto font-semibold">No Project Found</div>
-            <div className="text-sm font-medium mx-auto mt-1">
+            <div className="mt-4 font-outfit text-2xl mx-auto font-semibold text-center">No Project Found</div>
+            <div className="text-sm font-medium mx-auto mt-1 text-center">
               No project found with the provided address. Please enter a valid contract address.
             </div>
           </div>
@@ -217,8 +217,10 @@ function GrantAccess() {
       ) : (
         <div className="w-full flex flex-col bg-dark-2 border border-[#1F2328] rounded-lg p-12">
           <NotFoundIcon className="mx-auto" />
-          <div className="mt-4 font-outfit text-2xl mx-auto font-semibold">Please enter a contract address</div>
-          <div className="text-sm font-medium mx-auto mt-1">Please enter a contract address</div>
+          <div className="mt-4 font-outfit text-2xl mx-auto font-semibold text-center">
+            Please enter a contract address
+          </div>
+          <div className="text-sm font-medium mx-auto mt-1 text-center">Please enter a contract address</div>
         </div>
       )}
     </div>

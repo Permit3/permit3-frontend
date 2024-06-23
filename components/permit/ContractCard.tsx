@@ -169,7 +169,7 @@ function ContractCard(props: ContractCardProps) {
 
   return (
     <div className="rounded-lg bg-dark-2 border border-[#1F2328] p-4 flex flex-col gap-4">
-      <div className="flex flex-row justify-between">
+      <div className="flex flex-row justify-between flex-wrap">
         <div className="flex flex-row items-center gap-2">
           <PersonIcon />
           <div className="font-outfit font-semibold text-2xl">
@@ -178,7 +178,7 @@ function ContractCard(props: ContractCardProps) {
               : "--"}
           </div>
         </div>
-        <div className="flex-nowrap">
+        <div className="flex-nowrap ml-auto">
           <Button
             style="tertiary-colored"
             shadow={false}
