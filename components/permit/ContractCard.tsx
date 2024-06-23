@@ -218,10 +218,16 @@ function ContractCard(props: ContractCardProps) {
           <thead className="bg-[#282828]">
             <tr>
               <th scope="row" className="py-2 px-4">
+                Operator
+              </th>
+              <th scope="row" className="py-2 px-4">
                 Selector
               </th>
               <th scope="row" className="py-2 px-4">
                 Remaining Permit Allowance
+              </th>
+              <th scope="row" className="py-2 px-4">
+                Permit Timestamp
               </th>
               <th scope="row" className="py-2 px-4"></th>
             </tr>
@@ -229,8 +235,12 @@ function ContractCard(props: ContractCardProps) {
           <tbody className="divide-y divide-white/10">
             {contractData.full.map((p, idx) => (
               <tr key={`${contractData.address}-full-${idx}`}>
+                <td className="py-2 px-4">{`${p.operator.slice(0, 6)}...${p.operator.slice(
+                  p.operator.length - 4
+                )}`}</td>
                 <td className="py-2 px-4">*</td>
                 <td className="py-2 px-4">Unlimited</td>
+                <td className="py-2 px-4">{new Date(Number(p.creationTimestamp) * 1000).toLocaleString()}</td>
                 <td className="text-right">
                   <Button
                     style="tertiary-colored"
@@ -271,8 +281,12 @@ function ContractCard(props: ContractCardProps) {
             ))}
             {contractData.partial.map((p, idx) => (
               <tr key={`${contractData.address}-partial-${idx}`}>
+                <td className="py-2 px-4">{`${p.operator.slice(0, 6)}...${p.operator.slice(
+                  p.operator.length - 4
+                )}`}</td>
                 <td className="py-2 px-4">{`${p.rights.slice(0, 6)}...${p.rights.slice(p.rights.length - 4)}`}</td>
                 <td className="py-2 px-4">{p.number.toString()}</td>
+                <td className="py-2 px-4">{new Date(Number(p.creationTimestamp) * 1000).toLocaleString()}</td>
                 <td className="text-right">
                   <Button
                     style="tertiary-colored"
