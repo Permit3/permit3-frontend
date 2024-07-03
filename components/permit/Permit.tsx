@@ -1,22 +1,57 @@
 import { useAccount } from "@starknet-react/core";
 import Sidebar from "../common/Sidebar";
 import ContractCard from "./ContractCard";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { NotFoundIcon } from "../icons/NotFoundIcon";
+import OperatorCard from "./OperatorCard";
 
 function Landing() {
-  const [contracts, handleContracts] = useState<
-    Map<
-      string,
-      {
-        address: string;
-        full: Permit[];
-        partial: Permit[];
-      }
-    >
-  >();
+  const [permits, handlePermits] = useState<Permit[]>([]);
 
   const { account } = useAccount();
+
+  const contracts = useMemo(() => {
+    const cObj: Map<string, { address: string; full: Permit[]; partial: Permit[] }> = new Map();
+    for (let p of permits as Permit[]) {
+      const cArr = cObj.get(p.contract) ?? { address: p.contract, full: [], partial: [] };
+      if (p.rights === "0x0800000000000011000000000000000000000000000000000000000000000000") {
+        // Permit all rights to operator for contract
+        cArr.full.push(p);
+      } else {
+        // Permit partial rights to operator for contract
+        cArr.partial.push(p);
+      }
+      cObj.set(p.contract, cArr);
+    }
+
+    return cObj;
+  }, [permits]);
+
+  const operators = useMemo(() => {
+    const oObj: Map<string, { address: string; full: Permit[]; partial: Permit[] }> = new Map();
+    for (let p of permits as Permit[]) {
+      const oArr = oObj.get(p.operator) ?? { address: p.operator, full: [], partial: [] };
+      if (p.rights === "0x0800000000000011000000000000000000000000000000000000000000000000") {
+        // Permit all rights to operator for contract
+        oArr.full.push(p);
+      } else {
+        // Permit partial rights to operator for contract
+        oArr.partial.push(p);
+      }
+      oObj.set(p.operator, oArr);
+    }
+    return oObj;
+  }, [permits]);
+
+  const updateContractPermits = (contract: string, newPermits: Permit[]) => {
+    const existingPermits = permits.filter((p) => p.contract !== contract);
+    handlePermits([...existingPermits, ...newPermits]);
+  };
+
+  const updateOperatorPermits = (operator: string, newPermits: Permit[]) => {
+    const existingPermits = permits.filter((p) => p.operator !== operator);
+    handlePermits([...existingPermits, ...newPermits]);
+  };
 
   useEffect(() => {
     if (!account) {
@@ -36,19 +71,7 @@ function Landing() {
         .then((res) => res.json())
         .then((response) => {
           if (response.data?.permits) {
-            const obj: Map<string, { address: string; full: Permit[]; partial: Permit[] }> = new Map();
-            for (let p of response.data.permits as Permit[]) {
-              const arr = obj.get(p.contract) ?? { address: p.contract, full: [], partial: [] };
-              if (p.rights === "0x0800000000000011000000000000000000000000000000000000000000000000") {
-                // Permit all rights for contract
-                arr.full.push(p);
-              } else {
-                // Permit partial rights for contract
-                arr.partial.push(p);
-              }
-              obj.set(p.contract, arr);
-            }
-            handleContracts(obj);
+            handlePermits(response.data.permits);
           }
         });
     })();
@@ -73,21 +96,14 @@ function Landing() {
     );
   }
 
-  const updateContract = (contract: { address: string; full: Permit[]; partial: Permit[] }) => {
-    const c = new Map(contracts);
-    if (contract.full.length === 0 && contract.partial.length === 0) {
-      c.delete(contract.address);
-      handleContracts(c);
-    } else {
-      c.set(contract.address, contract);
-    }
-
-    handleContracts(c);
-  };
-
   const renderContracts = () => {
     let ret: JSX.Element[] = [];
-    contracts && contracts.forEach((c) => ret.push(<ContractCard contract={c} updateContract={updateContract} />));
+    // Render by contract
+    // contracts &&
+    //   contracts.forEach((c) => ret.push(<ContractCard contract={c} updatePermits={updateContractPermits} />));
+    // Render by operator
+    operators &&
+      operators.forEach((o) => ret.push(<OperatorCard operator={o} updatePermits={updateOperatorPermits} />));
     return <>{...ret}</>;
   };
 

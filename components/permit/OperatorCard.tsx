@@ -10,17 +10,17 @@ import { useNotification } from "@/utils/notification/NotificationProvider";
 import { SuccessIcon } from "../icons/SuccessIcon";
 import { CallData } from "starknet";
 
-interface ContractCardProps {
-  contract: {
+interface OperatorCardProps {
+  operator: {
     address: string;
     full: Permit[];
     partial: Permit[];
   };
-  updatePermits: (contract: string, permits: Permit[]) => void;
+  updatePermits: (operator: string, permits: Permit[]) => void;
 }
 
-function ContractCard(props: ContractCardProps) {
-  const { contract: contractData, updatePermits } = props;
+function OperatorCard(props: OperatorCardProps) {
+  const { operator, updatePermits } = props;
   const [actionLoading, handleActionLoading] = useState(false);
 
   const { showModal, hideModal, setTopModalProps } = useGlobalModalContext();
@@ -40,19 +40,21 @@ function ContractCard(props: ContractCardProps) {
       contract.contract.connect(account);
       // Build multicall
       const callArr = [];
-      if (contractData.full.length > 0) {
-        callArr.push({
-          contractAddress: contract.contract.address,
-          entrypoint: "permit_all_rights_in_contract",
-          calldata: CallData.compile([account.address, contractData.address, 0])
-        });
+      if (operator.full.length > 0) {
+        for (const p of operator.partial) {
+          callArr.push({
+            contractAddress: contract.contract.address,
+            entrypoint: "permit_all_rights_in_contract",
+            calldata: CallData.compile([operator.address, p.contract, 0])
+          });
+        }
       }
-      if (contractData.partial.length > 0) {
-        for (const p of contractData.partial) {
+      if (operator.partial.length > 0) {
+        for (const p of operator.partial) {
           callArr.push({
             contractAddress: contract.contract.address,
             entrypoint: "permit",
-            calldata: CallData.compile([account.address, contractData.address, p.rights, 0])
+            calldata: CallData.compile([operator.address, p.contract, p.rights, 0])
           });
         }
       }
@@ -62,7 +64,7 @@ function ContractCard(props: ContractCardProps) {
       await wait(txHash.transaction_hash);
 
       // Update UI
-      updatePermits(contractData.address, []);
+      updatePermits(operator.address, []);
 
       // Hide loading modal
       hideModal();
@@ -72,10 +74,9 @@ function ContractCard(props: ContractCardProps) {
         MODAL_TYPE.TRANSACTION_FLOW,
         {
           loading: false,
-          subtitle: `Permits revoked successfully for ${contractData.address.slice(
-            0,
-            6
-          )}...${contractData.address.slice(contractData.address.length - 4)}.`,
+          subtitle: `Permits revoked successfully for ${operator.address.slice(0, 6)}...${operator.address.slice(
+            operator.address.length - 4
+          )}.`,
           closeButtonText: "OK",
           closeButtonCallback: () => {
             hideModal();
@@ -98,7 +99,7 @@ function ContractCard(props: ContractCardProps) {
     }
   };
 
-  const revokeAccess = async (full: boolean = false, selector?: string) => {
+  const revokeAccess = async (full: boolean = false, contractAddress: string, selector?: string) => {
     if (!contract.contract || !account) {
       return;
     }
@@ -109,13 +110,13 @@ function ContractCard(props: ContractCardProps) {
       contract.contract.connect(account);
       // Remove permit
       if (full) {
-        let txHash = await contract.contract.permit_all_rights_in_contract(account.address, contractData.address, 0);
+        let txHash = await contract.contract.permit_all_rights_in_contract(operator.address, contractAddress, 0);
         if (!txHash) {
           return;
         }
         await wait(txHash.transaction_hash);
       } else {
-        let txHash = await contract.contract.permit(account.address, contractData.address, selector, 0);
+        let txHash = await contract.contract.permit(operator.address, contractAddress, selector, 0);
         if (!txHash) {
           return;
         }
@@ -124,14 +125,19 @@ function ContractCard(props: ContractCardProps) {
 
       // Update UI
       if (full) {
-        updatePermits(contractData.address, [...contractData.partial]);
+        const full = operator.full;
+        const idx = full.findIndex((p) => p.contract === contractAddress);
+        if (idx >= 0) {
+          full.splice(idx, 1);
+        }
+        updatePermits(operator.address, [...operator.full, ...operator.partial]);
       } else {
-        const partial = contractData.partial;
+        const partial = operator.partial;
         const idx = partial.findIndex((p) => p.rights === selector);
         if (idx >= 0) {
           partial.splice(idx, 1);
         }
-        updatePermits(contractData.address, [...contractData.full, ...partial]);
+        updatePermits(operator.address, [...operator.full, ...partial]);
       }
 
       // Hide loading modal
@@ -142,8 +148,8 @@ function ContractCard(props: ContractCardProps) {
         MODAL_TYPE.TRANSACTION_FLOW,
         {
           loading: false,
-          subtitle: `Permit revoked successfully for ${contractData.address.slice(0, 6)}...${contractData.address.slice(
-            contractData.address.length - 4
+          subtitle: `Permit revoked successfully for ${operator.address.slice(0, 6)}...${operator.address.slice(
+            operator.address.length - 4
           )}.`,
           closeButtonText: "OK",
           closeButtonCallback: () => {
@@ -173,8 +179,8 @@ function ContractCard(props: ContractCardProps) {
         <div className="flex flex-row items-center gap-2">
           <PersonIcon />
           <div className="font-outfit font-semibold text-2xl">
-            {contractData.address
-              ? `${contractData.address.slice(0, 6)}...${contractData.address.slice(contractData.address.length - 4)}`
+            {operator.address
+              ? `${operator.address.slice(0, 6)}...${operator.address.slice(operator.address.length - 4)}`
               : "--"}
           </div>
         </div>
@@ -187,10 +193,10 @@ function ContractCard(props: ContractCardProps) {
                 MODAL_TYPE.TRANSACTION_FLOW,
                 {
                   loading: actionLoading,
-                  subtitle: `Are you sure you want to revoke all permits from ${contractData.address.slice(
+                  subtitle: `Are you sure you want to revoke all permits from ${operator.address.slice(
                     0,
                     6
-                  )}...${contractData.address.slice(contractData.address.length - 4)}?`,
+                  )}...${operator.address.slice(operator.address.length - 4)}?`,
                   okButtonText: "Revoke Permits",
                   okButtonCallback: async () => {
                     await revokeAllAccess();
@@ -218,7 +224,7 @@ function ContractCard(props: ContractCardProps) {
           <thead className="bg-[#282828]">
             <tr>
               <th scope="row" className="py-2 px-4">
-                Operator
+                Contract
               </th>
               <th scope="row" className="py-2 px-4">
                 Selector
@@ -233,10 +239,10 @@ function ContractCard(props: ContractCardProps) {
             </tr>
           </thead>
           <tbody className="divide-y divide-white/10">
-            {contractData.full.map((p, idx) => (
-              <tr key={`${contractData.address}-full-${idx}`}>
-                <td className="py-2 px-4">{`${p.operator.slice(0, 6)}...${p.operator.slice(
-                  p.operator.length - 4
+            {operator.full.map((p, idx) => (
+              <tr key={`${operator.address}-full-${idx}`}>
+                <td className="py-2 px-4">{`${p.contract.slice(0, 6)}...${p.contract.slice(
+                  p.contract.length - 4
                 )}`}</td>
                 <td className="py-2 px-4">*</td>
                 <td className="py-2 px-4">Unlimited</td>
@@ -250,15 +256,16 @@ function ContractCard(props: ContractCardProps) {
                         MODAL_TYPE.TRANSACTION_FLOW,
                         {
                           loading: actionLoading,
-                          subtitle: `Are you sure you want to revoke full access from ${contractData.address.slice(
+                          subtitle: `Are you sure you want to revoke full access from ${operator.address.slice(
                             0,
                             6
-                          )}...${contractData.address.slice(
-                            contractData.address.length - 4
-                          )}? Partial selector permits will remain unmodified.`,
+                          )}...${operator.address.slice(operator.address.length - 4)} for contract ${p.contract.slice(
+                            0,
+                            6
+                          )}...${p.contract.slice(p.contract.length - 4)}?`,
                           okButtonText: "Revoke Permit",
                           okButtonCallback: async () => {
-                            await revokeAccess(true);
+                            await revokeAccess(true, p.contract);
                           },
                           closeButtonText: "Cancel",
                           closeButtonCallback: () => {
@@ -279,10 +286,10 @@ function ContractCard(props: ContractCardProps) {
                 </td>
               </tr>
             ))}
-            {contractData.partial.map((p, idx) => (
-              <tr key={`${contractData.address}-partial-${idx}`}>
-                <td className="py-2 px-4">{`${p.operator.slice(0, 6)}...${p.operator.slice(
-                  p.operator.length - 4
+            {operator.partial.map((p, idx) => (
+              <tr key={`${operator.address}-partial-${idx}`}>
+                <td className="py-2 px-4">{`${p.contract.slice(0, 6)}...${p.contract.slice(
+                  p.contract.length - 4
                 )}`}</td>
                 <td className="py-2 px-4">{`${p.rights.slice(0, 6)}...${p.rights.slice(p.rights.length - 4)}`}</td>
                 <td className="py-2 px-4">{p.number.toString()}</td>
@@ -298,12 +305,12 @@ function ContractCard(props: ContractCardProps) {
                           loading: actionLoading,
                           subtitle: `Are you sure you want to revoke the ${p.rights.slice(0, 6)}...${p.rights.slice(
                             p.rights.length - 4
-                          )} permit from ${contractData.address.slice(0, 6)}...${contractData.address.slice(
-                            contractData.address.length - 4
-                          )}?`,
+                          )} permit from ${operator.address.slice(0, 6)}...${operator.address.slice(
+                            operator.address.length - 4
+                          )} for contract ${p.contract.slice(0, 6)}...${p.contract.slice(p.contract.length - 4)}?`,
                           okButtonText: "Revoke Permit",
                           okButtonCallback: async () => {
-                            await revokeAccess(false, p.rights);
+                            await revokeAccess(false, p.contract, p.rights);
                           },
                           closeButtonText: "Cancel",
                           closeButtonCallback: () => {
@@ -331,4 +338,4 @@ function ContractCard(props: ContractCardProps) {
   );
 }
 
-export default ContractCard;
+export default OperatorCard;
